@@ -2,7 +2,7 @@ import signal
 
 from autobahn.wamp import protocol
 from autobahn.wamp.types import ComponentConfig
-from autobahn.websocket.protocol import parseWsUrl
+from autobahn.websocket.util import parse_url
 from autobahn.asyncio.websocket import WampWebSocketClientFactory
 
 import asyncio
@@ -97,7 +97,7 @@ class ApplicationRunner(object):
         self._retry_strategy = retry_strategy
         self._closing = False
 
-        self._isSecure, self._host, self._port, _, _, _ = parseWsUrl(url)
+        self._isSecure, self._host, self._port, _, _, _ = parse_url(url)
 
         if ssl is None:
             self._ssl = self._isSecure
@@ -130,8 +130,7 @@ class ApplicationRunner(object):
                 session.debug_app = self._debug_app
                 return session
 
-        self._transport_factory = WampWebSocketClientFactory(_create_app_session, url=self._url, serializers=self._serializers,
-                                                       debug=self._debug, debug_wamp=self._debug_wamp)
+        self._transport_factory = WampWebSocketClientFactory(_create_app_session, url=self._url, serializers=self._serializers)
 
         txaio.use_asyncio()
         txaio.config.loop = self._loop
